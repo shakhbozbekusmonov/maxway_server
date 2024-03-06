@@ -34,7 +34,6 @@ urlpatterns = [
 
     # local apps
     path('api/v1/accounts/', include('accounts.urls')),
-
 ]
 
 if settings.DEBUG:

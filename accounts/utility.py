@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from rest_framework.exceptions import ValidationError
 
 email_regex = re.compile(r"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+")
+username_regex = re.compile(r"^[a-z0-9_-]{3,15}$")
 
 
 def check_email(email):
@@ -19,6 +20,19 @@ def check_email(email):
         raise ValidationError(data)
 
     return email
+
+
+def check_user_type(user_input):
+    if re.fullmatch(email_regex, user_input):
+        user_input = "email"
+    elif re.fullmatch(username_regex, user_input):
+        user_input = "username"
+    else:
+        data = {
+            "message": "Email yoki username noto'g'ri."
+        }
+        raise ValidationError(data)
+    return user_input
 
 
 def send_email(email, code):
