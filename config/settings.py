@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     # local apps
     'common',
     'accounts',
+    'products',
+    'orders',
 ]
 
 MIDDLEWARE = [
