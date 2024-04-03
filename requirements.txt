@@ -11,7 +11,7 @@ djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
 inflection==0.5.1
 packaging==23.2
-pillow==10.2.0
+pillow==10.3.0
 psycopg==3.1.18
 PyJWT==2.8.0
 pytz==2024.1
