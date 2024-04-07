@@ -182,3 +182,5 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         instance.set_password(password)
         return super(ResetPasswordSerializer, self).update(instance, validated_data)
+
+

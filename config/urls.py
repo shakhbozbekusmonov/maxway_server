@@ -8,9 +8,9 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Django API",
+        title="MaxWay API",
         default_version='v1',
-        description="Django - template",
+        description="MaxWay - birinchi milliy fast-food API documentation",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="shakhbozbek.usmonov@gmail.com"),
         license=openapi.License(name="BSD License"),
@@ -33,7 +33,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # local apps
-    path('api/v1/accounts/', include('accounts.urls')),
+    path('api/v1/users/', include('accounts.urls'), name="accounts"),
+    path('api/v1/products/', include('products.urls'), name="products"),
 ]
 
 if settings.DEBUG:

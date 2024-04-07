@@ -52,6 +52,7 @@ class VerifyAPIView(APIView):
             verifies.update(is_confirmed=True)
         if user.auth_status == NEW:
             user.auth_status = CODE_VERIFIED
+            user.is_active = True
             user.save()
         return True
 
@@ -87,13 +88,7 @@ class LoginAPIView(TokenObtainPairView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
-        if user.auth_status == CODE_VERIFIED:
-            user.auth_status = DONE
-            user.save()
-            return Response({"message": "Authentication status updated successfully."}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "User authentication status not verified."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Authentication status updated successfully."}, status=status.HTTP_200_OK)
 
 
 class LoginRefreshAPIView(TokenRefreshView):
@@ -168,3 +163,15 @@ class ResetPasswordAPIView(UpdateAPIView):
                 "refresh": user.token()['refresh']
             }
         )
+
+
+# class UserProfileAPIView(APIView):
+#
+#     def get(self, request):
+#         try:
+#             user_profile = UserProfile.objects.get(user=request.user)
+#         except UserProfile.DoesNotExist:
+#             user_profile = UserProfile.objects.create(user=request.user)
+#
+#         serializer = UserProfileSerializer(user_profile)
+#         return Response(serializer.data)

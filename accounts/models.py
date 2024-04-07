@@ -4,8 +4,9 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
-from common.models import BaseModel
 
+from accounts.managers import UserManager
+from common.models import BaseModel, Media
 
 ORDINARY_USER, MANAGER, ADMIN, SUPER_ADMIN = (
     'ordinary_user', 'manager', 'admin', 'super_admin')
@@ -32,6 +33,8 @@ class CustomUser(AbstractUser, BaseModel):
         max_length=31, choices=AUTH_STATUS_CHOICES, default=NEW)
     email = models.EmailField(unique=True,
                               validators=[RegexValidator(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')])
+
+    objects = UserManager()
 
     def __str__(self):
         return self.username
@@ -96,3 +99,13 @@ class CustomUserVerification(models.Model):
     def save(self, *args, **kwargs):
         self.expiration_time = datetime.now() + timedelta(minutes=EMAIL_EXPIRE)
         super(CustomUserVerification, self).save(*args, **kwargs)
+
+
+# class UserProfile(models.Model):
+#     address = models.CharField(max_length=255)
+#     bio = models.TextField()
+#
+#     avatar = models.ForeignKey(Media, on_delete=models.CASCADE)
+#     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
+

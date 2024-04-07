@@ -10,4 +10,5 @@ urlpatterns = [
     path('logout/', LogOutAPIView.as_view(), name='logout'),
     path('forgot-password/', ForgotPasswordAPIView.as_view(), name='forgot-password'),
     path('reset-password/', ResetPasswordAPIView.as_view(), name='reset-password'),
+    # path('profile/', UserProfileAPIView.as_view(), name='profile'),
 ]

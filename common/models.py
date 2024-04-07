@@ -22,5 +22,5 @@ class Media(models.Model):
         (TYPE_FILE, TYPE_FILE),
     )
 
-    file = models.FileField(upload_to='media')
+    file = models.FileField(upload_to='uploads/')
     type = models.CharField(max_length=6, choices=MEDIA_TYPE_CHOICES)
