@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 import random
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
+from geopy.distance import geodesic, distance
 
 from accounts.managers import UserManager
 from common.models import BaseModel, Media
@@ -108,4 +110,22 @@ class CustomUserVerification(models.Model):
 #     avatar = models.ForeignKey(Media, on_delete=models.CASCADE)
 #     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
+
+class UserLocation(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="locations")
+    lat = models.CharField(max_length=255)
+    long = models.CharField(max_length=255)
+    price = models.FloatField(null=True)
+    is_active = models.BooleanField(default=True)
+    def __str__(self):
+        return str(self.user.username)
+
+    class Meta:
+        unique_together = ('user', 'lat', 'long')
+
+    def save(self, *args, **kwargs):
+        coordinate1 = (self.lat, self.long)
+        coordinate2 = (settings.CENTER_COORDINATE_LAT, settings.CENTER_COORDINATE_LONG)
+        self.price = round(geodesic(coordinate1, coordinate2).km * int(settings.PRICE_FOR_PER_KM), 2)
+        return super(UserLocation, self).save(*args, **kwargs)
 

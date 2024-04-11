@@ -35,6 +35,7 @@ urlpatterns = [
     # local apps
     path('api/v1/users/', include('accounts.urls'), name="accounts"),
     path('api/v1/products/', include('products.urls'), name="products"),
+    path('api/v1/orders/', include('orders.urls'), name="orders"),
 ]
 
 if settings.DEBUG:

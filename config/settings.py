@@ -1,5 +1,7 @@
 from pathlib import Path
 from datetime import timedelta
+
+import certifi
 import environ
 import os
 
@@ -227,7 +229,8 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ]
+    ],
+    'EXCEPTION_HANDLER': 'accounts.my_exception_handler.custom_exception_handler',
 }
 
 # SIMPLE_JWT
@@ -289,3 +292,9 @@ CACHES = {
         }
     }
 }
+
+CENTER_COORDINATE_LAT = env('CENTER_COORDINATE_LAT')
+CENTER_COORDINATE_LONG = env('CENTER_COORDINATE_LONG')
+PRICE_FOR_PER_KM = env('PRICE_FOR_PER_KM')
+
+GEOPY_CA_CERT_FILE = certifi.where()

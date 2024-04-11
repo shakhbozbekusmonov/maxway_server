@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import AccessToken
 
-from accounts.models import CustomUser, NEW, CODE_VERIFIED, DONE
+from accounts.models import CustomUser, NEW, CODE_VERIFIED, DONE, UserLocation
 from accounts.utility import send_email, check_user_type
 
 
@@ -183,4 +183,31 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         instance.set_password(password)
         return super(ResetPasswordSerializer, self).update(instance, validated_data)
 
+
+class UserLocationCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserLocation
+        fields = ('lat', 'long')
+
+
+import certifi
+import ssl
+import geopy.geocoders
+from geopy.geocoders import Nominatim
+ctx = ssl.create_default_context(cafile=certifi.where())
+geopy.geocoders.options.default_ssl_context = ctx
+
+
+class UserLocationSerializer(serializers.ModelSerializer):
+    address = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserLocation
+        fields = ('id', 'address')
+
+    def get_address(self, obj):
+        geolocator = Nominatim(scheme='http', user_agent='getAddr')
+        coordinates = f"{obj.lat}, {obj.long}"
+        location = geolocator.reverse(coordinates)
+        return location.address
 

@@ -1,18 +1,19 @@
 from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError, NotFound
-from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
-from accounts.models import CustomUser, NEW, CODE_VERIFIED, DONE
+from accounts.models import CustomUser, NEW, CODE_VERIFIED, DONE, UserLocation
 from accounts.serializers import SignUpSerializer, ResetPasswordSerializer, ForgotPasswordSerializer, LogoutSerializer, \
-    LoginRefreshSerializer, LoginSerializer
+    LoginRefreshSerializer, LoginSerializer, UserLocationCreateSerializer, UserLocationSerializer
 from accounts.utility import send_email, check_email
 
 
@@ -175,3 +176,34 @@ class ResetPasswordAPIView(UpdateAPIView):
 #
 #         serializer = UserProfileSerializer(user_profile)
 #         return Response(serializer.data)
+
+
+class UserLocationCreateAPIView(CreateAPIView):
+    queryset = UserLocation.objects.all()
+    serializer_class = UserLocationCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            serializer = UserLocationCreateSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save(user=self.request.user)
+            return Response(serializer.data)
+        except IntegrityError as e:
+            return Response({
+                "message": "This user location is already exists",
+                "code": 400
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLocationListAPIView(ListAPIView):
+    queryset = UserLocation.objects.all()
+    serializer_class = UserLocationSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
