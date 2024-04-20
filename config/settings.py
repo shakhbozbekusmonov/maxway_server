@@ -28,6 +28,10 @@ DEBUG = env('DEBUG', cast=bool, default=False)
 ALLOWED_HOSTS = ["*"]
 
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.up.railway.app",
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -69,7 +73,9 @@ ROOT_URLCONF = 'config.urls'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://127.0.0.1',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'https://041d-195-158-30-253.ngrok-free.app',
+    'http://041d-195-158-30-253.ngrok-free.app',
 ]
 
 CORS_ALLOW_METHODS = (

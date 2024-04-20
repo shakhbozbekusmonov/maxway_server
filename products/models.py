@@ -17,12 +17,8 @@ class Product(BaseModel):
     price = models.FloatField()
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    image = models.ForeignKey(Media, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
-
-
-class ProductImage(models.Model):
-    image = models.ForeignKey(Media, on_delete=models.CASCADE, related_name='images')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
