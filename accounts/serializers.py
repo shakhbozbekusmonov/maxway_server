@@ -51,8 +51,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     def __init__(self, *args, **kwargs):
         super(LoginSerializer, self).__init__(*args, **kwargs)
         self.fields['user_input'] = serializers.CharField(required=True)
-        self.fields['username'] = serializers.CharField(
-            required=False, read_only=True)
+        self.fields['username'] = serializers.CharField(required=False, read_only=True)
 
     def auth_validate(self, data):
         user_input = data.get('user_input')
@@ -63,7 +62,7 @@ class LoginSerializer(TokenObtainPairSerializer):
             username = user.username
         else:
             data = {
-                'success': True,
+                'success': False,
                 'message': "Siz email yoki username jo'natishingiz kerak"
             }
             raise ValidationError(data)
@@ -108,6 +107,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         if not users.exists():
             raise ValidationError(
                 {
+                    "success": False,
                     "message": "No active account found"
                 }
             )
@@ -211,3 +211,9 @@ class UserLocationSerializer(serializers.ModelSerializer):
         location = geolocator.reverse(coordinates)
         return location.address
 
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', )

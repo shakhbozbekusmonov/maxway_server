@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError, NotFound
-from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
@@ -13,7 +13,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from accounts.models import CustomUser, NEW, CODE_VERIFIED, DONE, UserLocation
 from accounts.serializers import SignUpSerializer, ResetPasswordSerializer, ForgotPasswordSerializer, LogoutSerializer, \
-    LoginRefreshSerializer, LoginSerializer, UserLocationCreateSerializer, UserLocationSerializer
+    LoginRefreshSerializer, LoginSerializer, UserLocationCreateSerializer, UserLocationSerializer, UserProfileSerializer
 from accounts.utility import send_email, check_email
 
 
@@ -89,7 +89,12 @@ class LoginAPIView(TokenObtainPairView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
-        return Response({"message": "Authentication status updated successfully."}, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginRefreshAPIView(TokenRefreshView):
@@ -166,17 +171,6 @@ class ResetPasswordAPIView(UpdateAPIView):
         )
 
 
-# class UserProfileAPIView(APIView):
-#
-#     def get(self, request):
-#         try:
-#             user_profile = UserProfile.objects.get(user=request.user)
-#         except UserProfile.DoesNotExist:
-#             user_profile = UserProfile.objects.create(user=request.user)
-#
-#         serializer = UserProfileSerializer(user_profile)
-#         return Response(serializer.data)
-
 
 class UserLocationCreateAPIView(CreateAPIView):
     queryset = UserLocation.objects.all()
@@ -207,3 +201,11 @@ class UserLocationListAPIView(ListAPIView):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
+
+class UserProfileAPIView(RetrieveUpdateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

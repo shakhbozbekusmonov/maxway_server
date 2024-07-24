@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
 
     # local apps
@@ -73,9 +74,8 @@ ROOT_URLCONF = 'config.urls'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://127.0.0.1',
+    'http://127.0.0.1:5500',
     'http://localhost:5173',
-    'https://041d-195-158-30-253.ngrok-free.app',
-    'http://041d-195-158-30-253.ngrok-free.app',
 ]
 
 CORS_ALLOW_METHODS = (
@@ -221,8 +221,6 @@ SWAGGER_SETTINGS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
@@ -234,15 +232,15 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 15,
 
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'EXCEPTION_HANDLER': 'accounts.my_exception_handler.custom_exception_handler',
 }
 
 # SIMPLE_JWT
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=180),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,

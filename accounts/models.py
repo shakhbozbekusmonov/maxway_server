@@ -84,7 +84,7 @@ class CustomUser(AbstractUser, BaseModel):
         self.hashing_password()
 
 
-EMAIL_EXPIRE = 5
+EMAIL_EXPIRE = 2
 
 
 class CustomUserVerification(models.Model):
@@ -129,4 +129,3 @@ class UserLocation(models.Model):
         coordinate2 = (settings.CENTER_COORDINATE_LAT, settings.CENTER_COORDINATE_LONG)
         self.price = round(geodesic(coordinate1, coordinate2).km * int(settings.PRICE_FOR_PER_KM), 2)
         return super(UserLocation, self).save(*args, **kwargs)
-
