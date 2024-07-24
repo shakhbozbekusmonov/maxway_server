@@ -1,6 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
-
+import dj_database_url
 import certifi
 import environ
 import os
@@ -130,14 +130,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': env('DB_ENGINE'),
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASS'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
-    }
+    'default': dj_database_url.config(default=env('DATABASE_URL'))
 }
 
 
