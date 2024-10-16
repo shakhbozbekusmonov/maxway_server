@@ -46,6 +46,10 @@ class SignUpSerializer(serializers.ModelSerializer):
         return data
 
 
+class VerifySerializer(serializers.Serializer):
+    code = serializers.CharField()
+
+
 class LoginSerializer(TokenObtainPairSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -75,12 +79,9 @@ class LoginSerializer(TokenObtainPairSerializer):
         current_user = CustomUser.objects.filter(username__iexact=username).first()
 
         if current_user is not None and current_user.auth_status in [NEW, CODE_VERIFIED]:
-            raise ValidationError(
-                {
-                    'success': False,
-                    'message': "Siz ro'yhatdan to'liq o'tmagansiz!"
-                }
-            )
+            current_user.auth_status = DONE
+            current_user.save()
+
         user = authenticate(**authentication_kwargs)
         if user is not None:
             self.user = user

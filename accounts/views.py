@@ -13,7 +13,8 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from accounts.models import CustomUser, NEW, CODE_VERIFIED, DONE, UserLocation
 from accounts.serializers import SignUpSerializer, ResetPasswordSerializer, ForgotPasswordSerializer, LogoutSerializer, \
-    LoginRefreshSerializer, LoginSerializer, UserLocationCreateSerializer, UserLocationSerializer, UserProfileSerializer
+    LoginRefreshSerializer, LoginSerializer, UserLocationCreateSerializer, UserLocationSerializer, \
+    UserProfileSerializer, VerifySerializer
 from accounts.utility import send_email, check_email
 
 
@@ -30,6 +31,8 @@ class VerifyAPIView(APIView):
         user = self.request.user
         code = self.request.data.get('code')
 
+        print(code)
+
         self.check_verify(user, code)
         return Response(
             data={
@@ -44,6 +47,10 @@ class VerifyAPIView(APIView):
     def check_verify(user, code):
         verifies = user.verify_codes.filter(
             expiration_time__gte=datetime.now(), code=code, is_confirmed=False)
+
+        # Debugging statement to see what is being filtered
+        print(f"Filtered verifies: {verifies}")
+
         if not verifies.exists():
             data = {
                 "message": "Tasdiqlash kodingiz xato yoki eskirgan."
@@ -51,6 +58,7 @@ class VerifyAPIView(APIView):
             raise ValidationError(data)
         else:
             verifies.update(is_confirmed=True)
+
         if user.auth_status == NEW:
             user.auth_status = CODE_VERIFIED
             user.is_active = True
